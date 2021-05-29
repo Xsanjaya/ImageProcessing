@@ -1,11 +1,14 @@
 import numpy as np
 import cv2 as cv
-cap = cv.VideoCapture(1)
+cap = cv.VideoCapture(0)
+
 # take first frame of the video
 ret, frame = cap.read()
+
 # setup initial location of window
 x, y, width, height = 300, 200, 100, 50
 track_window = (x, y ,width, height)
+
 # set up the ROI for tracking
 roi = frame[y:y+height, x : x+width]
 hsv_roi = cv.cvtColor(roi, cv.COLOR_BGR2HSV)
