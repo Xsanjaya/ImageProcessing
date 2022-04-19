@@ -5,8 +5,9 @@
 from multiprocessing import Manager
 from multiprocessing import Process
 from imutils.video import VideoStream
-from pyimagesearch.objcenter import ObjCenter
-from pyimagesearch.pid import PID
+from lib.objcenter import ObjCenter
+from lib.pid import PID
+from lib.servo import *
 import argparse
 import signal
 import time
@@ -16,17 +17,17 @@ import cv2
 # define the range for the motors
 servoRange = (-90, 90)
 
-# function to handle keyboard interrupt
 def signal_handler(sig, frame):
 	# print a status message
 	print("[INFO] You pressed `ctrl + c`! Exiting...")
 
 	# disable the servos
-	pth.servo_enable(1, False)
-	pth.servo_enable(2, False)
+	# pth.servo_enable(1, False)
+	# pth.servo_enable(2, False)
 
 	# exit
 	sys.exit()
+
 
 def obj_center(args, objX, objY, centerX, centerY):
 	# signal trap to handle keyboard interrupt
@@ -115,8 +116,7 @@ if __name__ == "__main__":
 	# start a manager for managing process-safe variables
 	with Manager() as manager:
 		# enable the servos
-		pth.servo_enable(1, True)
-		pth.servo_enable(2, True)
+		
 
 		# set integer values for the object center (x, y)-coordinates
 		centerX = manager.Value("i", 0)
@@ -146,12 +146,16 @@ if __name__ == "__main__":
 		# 3. tilting       - PID control loop determines tilting angle
 		# 4. setServos     - drives the servos to proper angles based
 		#                    on PID feedback to keep object in center
+		
 		processObjectCenter = Process(target=obj_center,
 			args=(args, objX, objY, centerX, centerY))
+		
 		processPanning = Process(target=pid_process,
 			args=(pan, panP, panI, panD, objX, centerX))
+		
 		processTilting = Process(target=pid_process,
 			args=(tlt, tiltP, tiltI, tiltD, objY, centerY))
+		
 		processSetServos = Process(target=set_servos, args=(pan, tlt))
 
 		# start all 4 processes

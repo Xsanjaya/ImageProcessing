@@ -1,5 +1,5 @@
 # USAGE
-# python object_tracker.py --prototxt deploy.prototxt --model res10_3S00x300_ssd_iter_140000.caffemodelC
+# python object_tracker.py --prototxt deploy.prototxt --model caffemodel.caffemodel
 
 # import the necessary packages
 from pyimagesearch.centroidtracker import CentroidTracker
@@ -46,11 +46,10 @@ while True:
 	# construct a blob from the frame, pass it through the network,
 	# obtain our output predictions, and initialize the list of
 	# bounding box rectangles
-	blob = cv2.dnn.blobFromImage(frame, 1.0, (W, H),
-		(104.0, 177.0, 123.0))
+	blob = cv2.dnn.blobFromImage(frame, 1.0, (W, H), (104.0, 177.0, 123.0))
 	net.setInput(blob)
 	detections = net.forward()
-	rects = []
+	rects = 0
 
 	# loop over the detections
 	for i in range(0, detections.shape[2]):
@@ -65,20 +64,19 @@ while True:
 			# draw a bounding box surrounding the object so we can
 			# visualize it
 			(startX, startY, endX, endY) = box.astype("int")
-			cv2.rectangle(frame, (startX, startY), (endX, endY),
-				(0, 255, 0), 2)
+			# cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
 	# update our centroid tracker using the computed set of bounding
 	# box rectangles
 	objects = ct.update(rects)
+	print(objects)
 
 	# loop over the tracked objects
 	for (objectID, centroid) in objects.items():
 		# draw both the ID of the object and the centroid of the
 		# object on the output frame
 		text = "ID {}".format(objectID)
-		cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+		cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 		cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
 
 	# show the output frame
