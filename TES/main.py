@@ -26,7 +26,11 @@ while 1:
 					flags=cv2.CASCADE_SCALE_IMAGE)
 
 	for (x,y,w,h) in faces:
+		center_coordinates = x + w // 2, y + h // 2
+		radius = w // w
+		cv2.circle(frame_rgb, center_coordinates, radius, (0, 0, 100), 10)
 		cv2.rectangle(frame_rgb,(x,y),(x+w,y+h),(255,0,0),1)
+		
 		roi_gray = img_gray[y:y+h, x:x+w]
 		roi_color = frame_rgb[y:y+h, x:x+w]
 		# cv2.imshow("ROI_rgb", roi_color)
